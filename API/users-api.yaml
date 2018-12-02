@@ -1,0 +1,224 @@
+swagger: "2.0"
+info:
+  description: "This is a sample server Udemy course."
+  version: "0.0.1"
+  title: "Udemy Course - User List"
+  termsOfService: "http://swagger.io/terms/"
+  contact:
+    name: "Fernando Pucci"
+    email: "fsilvapucci@gmail.com"
+  license:
+    name: "Apache 2.0"
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+host: "api.users.swagger.io"
+basePath: "/v1"
+produces:
+      - "application/xml"
+      - "application/json"
+tags:
+- name: "users"
+  description: "Everything about your Users"
+  externalDocs:
+    description: "Find out more"
+    url: "http://swagger.io"
+schemes:
+- "https"
+- "http"
+paths: 
+  /users:
+    get:
+      tags:
+      - "Users"
+      summary: "Get a list of users to the list"
+      description: "This endpoint gets **all** registered users in the system"
+      operationId: "getAllUsers"
+      consumes:
+      - "application/json"
+      - "application/xml"
+      produces:
+      - "application/xml"
+      - "application/json"
+      responses:
+        200:
+          description: "Ok. An array of Users"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/User"
+        404:
+          description: "Not Found."
+        500:
+          description: "An error occurred."
+          schema:
+            $ref: "#/definitions/Error"
+      security:
+      - userstore_auth:
+        - "write:users"
+        - "read:users"
+    post:
+      summary: "Create an User"
+      description: "Creates an User into the system"
+      parameters: 
+        - name: User
+          in: body
+          description: User
+          required: true
+          schema:
+            $ref: '#/definitions/User'
+      operationId: "saveUser"
+      responses:
+        201:
+          description: Registered User
+          schema: 
+            $ref: "#/definitions/User"
+        default:
+          description: "An Error has Occurred."
+          schema:
+            $ref: "#/definitions/Error"
+    put:
+      summary: "Update an User"
+      description: "Updates an User into the system **ID field must be required**"
+      parameters: 
+        - name: User
+          in: body
+          description: User
+          required: true
+          schema:
+            $ref: '#/definitions/User'
+      operationId: "updateUser"
+      responses:
+        200:
+          description: User updated with success
+          schema: 
+            $ref: "#/definitions/User"
+        404:
+          description: "User Not Found. **Remember to input ID field**"
+        default:
+          description: "An Error has Occurred."
+          schema:
+            $ref: "#/definitions/Error"
+    patch:
+      summary: "Update an User"
+      description: "Updates an User into the system **ID field must be required**"
+      parameters: 
+        - name: User
+          in: body
+          description: User
+          required: true
+          schema:
+            $ref: '#/definitions/User'
+      operationId: "updateFullUser"
+      responses:
+        200:
+          description: User updated with success
+          schema: 
+            $ref: "#/definitions/User"
+        404:
+          description: "User Not Found. **Remember to input ID field**"
+        default:
+          description: "An Error has Occurred."
+          schema:
+            $ref: "#/definitions/Error"
+  /users/{id}:
+    get:
+      tags: 
+      - "Users by Id"
+      summary: "Get User by ID"
+      description: "This endpoint gets **only user equals Id** registered in the system"
+      parameters: 
+        - name: id
+          in: path
+          description: ID of User to use
+          required: true
+          type: integer
+          items:
+            type: integer
+      operationId: "getUser"
+      responses:
+        200:
+          description: "Ok. User found"
+          schema:
+            type: "object"
+            items:
+              $ref: "#/definitions/User"
+        404:
+          description: "Not Found."
+        500:
+          description: "An error occurred."
+          schema:
+            $ref: "#/definitions/Error"
+      security:
+      - userstore_auth:
+        - "write:users"
+        - "read:users"
+    delete:
+      tags: 
+      - "Delete User by Id"
+      summary: "Delete User by ID"
+      description: "This endpoint delete **only user equals Id** registered in the system"
+      parameters: 
+        - name: id
+          in: path
+          description: ID of User to remove
+          required: true
+          type: integer
+          items:
+            type: integer
+      operationId: "removeUser"
+      responses:
+        201:
+          description: "Ok. User Removed"
+        404:
+          description: "Not Found."
+        500:
+          description: "An error occurred."
+          schema:
+            $ref: "#/definitions/Error"
+      security:
+      - userstore_auth:
+        - "write:users"
+        - "read:users"
+securityDefinitions:
+  userstore_auth:
+    type: "oauth2"
+    authorizationUrl: "http://userstore.swagger.io/oauth/dialog"
+    flow: "implicit"
+    scopes:
+      write:users: "modify users in your account"
+      read:users: "read your users"
+  api_key:
+    type: "apiKey"
+    name: "api_key"
+    in: "header"
+definitions:
+  User:
+    type: "object"
+    required:
+    - "name"
+    - "email"
+    properties:
+      id:
+        description: "User's code"
+        type: "integer"
+        format: "int64"
+      name:
+        description: "User's Name"
+        type: "string"
+        example: "Zé da Silva"
+      email:
+        description: "User's Email"
+        type: "string"
+        example: "ze.silva@mycorp.com"
+  Error:
+    type: object
+    properties:
+      code:
+        type: integer
+        format: Int32
+      message:
+        type: string
+      fields:
+        type: string
+externalDocs:
+  description: "Find out more about Swagger"
+  url: "http://swagger.io"
